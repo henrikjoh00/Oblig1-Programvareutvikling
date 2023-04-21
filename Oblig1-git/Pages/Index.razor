@@ -149,11 +149,11 @@
         lastAnimalFound = string.Empty;
         lastDescription = string.Empty;
         //timeDisplay = "00:20:00.0";
-        
+
 
         timer = new Timer(1000);
         timer.Elapsed += Timer_Tick;
-        
+
         timeLeft = 20;
         timer.Start();
     }
@@ -185,7 +185,7 @@
             if (matchesFound == 8)
             {
                 timer.Stop();
-                
+                timeDisplay += "   Game Complete";
             }
 
         }
@@ -205,7 +205,7 @@
             timeDisplay = TimeSpan.FromSeconds(timeLeft).ToString(@"ss\.f") + "s";
             if ((timeLeft <= 0) && (matchesFound != 8))
             {
-               
+                timeDisplay = "GAME OVER";
                 timer.Enabled = false;
             }
             StateHasChanged();
