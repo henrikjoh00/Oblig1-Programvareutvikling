@@ -1,0 +1,94 @@
+﻿@page "/memory"
+
+
+<h1>Memory Game</h1>
+
+<style>
+    .container {
+        width: 400px;
+    }
+
+    button {
+        width: 100px;
+        height: 100px;
+        font-size: 50px;
+    }
+</style>
+
+<div class="container">
+ <div class="row">
+        @foreach (var animal in shuffledAnimals)
+        {
+     <div class="col-3">
+     <button @onclick="@(() => ButtonClick(animal))"
+             type="button" class="btn btn-outline-dark">
+     <h1>@variabel</h1>
+     </button>
+     </div>
+        }
+ </div>
+</div>
+
+@code{
+    //Setter variabelen som er det som skal vises før man snur kortene til en tom string.
+    string variabel = empty.String;
+    List<string> animalEmoji = new List<string>()
+    {
+        "🐍", "🐍",
+        "🐤", "🐤",
+        "😺", "😺",
+        "🐘", "🐘",
+        "🦋", "🦋",
+        "🐅", "🐅",
+        "🐒", "🐒",
+        "🦈", "🦈",
+
+
+    };
+
+    List<string> shuffledAnimals = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        SetUpGame();
+    }
+
+    private void SetUpGame()
+    {
+        Random random = new Random();
+        shuffledAnimals = animalEmoji
+        .OrderBy(item => random.Next())
+        .ToList();
+    }
+
+
+    string lastAnimalFound = string.Empty;
+    private void ButtonClick(string animal)
+    {   
+        //Når man trykker på et "kort" vil den byttes til å vise et ikon
+        variabel = animal;
+        if (lastAnimalFound == string.Empty)
+        {
+            // First selection of the pair. Remember it.
+            lastAnimalFound = animal;
+        }
+        else if (lastAnimalFound == animal)
+        {
+            // Match found! Reset for next pair.
+            lastAnimalFound = string.Empty;
+            // Replace found animals with empty string to hide them.
+            shuffledAnimals = shuffledAnimals
+            .Select(a => a.Replace(animal, string.Empty))
+            .ToList();
+        }
+        else
+        {
+            // User selected a pair that don't match.
+            // Reset selection.
+            lastAnimalFound = string.Empty;
+            //Hvis det ikke ble noe match vil "kortet" snus og endres til å bare vise baksiden.
+            variabel = empty.String;
+        }
+    }
+
+}
