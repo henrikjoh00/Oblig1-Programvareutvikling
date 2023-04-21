@@ -29,7 +29,8 @@
 </div>
 
 <div class="container">
- <div class="row">
+    
+    <div class="row" style="margin-top:10px">
         @for (var animalNumber = 0; animalNumber < shuffledAnimals.Count; animalNumber++)
         {
             var animal = shuffledAnimals[animalNumber];
@@ -42,7 +43,11 @@
             </button>
             </div>
         }
- </div>
+    </div>
+    
+    <div class="row">
+        <button @onclick="@(() => SetUpGame())" type="button" class="btn btn-primary">Start Game</button>
+    </div>
     <div class="row">
         <h2>Matches found: @matchesFound</h2>
     </div>
@@ -65,6 +70,7 @@
     "🐅", "🐅",
     "🐒", "🐒",
     "🦈", "🦈",
+
 
     "🍔", "🍔",
     "🍕", "🍕",
@@ -92,19 +98,20 @@
     Timer timer;
     int tenthsOfSecondsElapsed = 0;
     string timeDisplay;
+    int timeLeft;
 
 
     protected override void OnInitialized()
     {
-        timer = new Timer(100);
-        timer.Elapsed += Timer_Tick;
+        //timer = new Timer(1000);
+        //timer.Elapsed += Timer_Tick;
 
-        SetUpGame();
+        //SetUpGame();
     }
 
     private void OnSelectedThemeChange()
     {
-        SetUpGame();
+        //SetUpGame();
     }
 
     private void SetUpGame()
@@ -137,12 +144,18 @@
 
         } 
 
-                matchesFound = 0;
-                tenthsOfSecondsElapsed = 0;
-                lastAnimalFound = string.Empty;
-                lastDescription = string.Empty;
-                timer.Stop();
-                timeDisplay = "00:00:00.0";
+        matchesFound = 0;
+        tenthsOfSecondsElapsed = 0;
+        lastAnimalFound = string.Empty;
+        lastDescription = string.Empty;
+        //timeDisplay = "00:20:00.0";
+        
+
+        timer = new Timer(1000);
+        timer.Elapsed += Timer_Tick;
+        
+        timeLeft = 20;
+        timer.Start();
     }
 
 
@@ -158,13 +171,12 @@
 
             lastDescription = animalDescription;
 
-            timer.Start();
         }
         else if ((lastAnimalFound == animal) && (animalDescription != lastDescription))
         {
-            // Match found! Reset for next pair.
+            // Match funnet og det er ikke den samme som ble trykket 2 ganger
             lastAnimalFound = string.Empty;
-            // Replace found animals with empty string to hide them.
+            // Setter den forrige knappen lik en "tom" string for å skjule emojien
             shuffledAnimals = shuffledAnimals
             .Select(a => a.Replace(animal, string.Empty))
             .ToList();
@@ -173,8 +185,7 @@
             if (matchesFound == 8)
             {
                 timer.Stop();
-                timeDisplay += " - Play Again?";
-                SetUpGame();
+                
             }
 
         }
@@ -190,11 +201,16 @@
     {
         InvokeAsync(() =>
         {
-            tenthsOfSecondsElapsed++;
-            timeDisplay = (tenthsOfSecondsElapsed / 10F)
-     .ToString("0.0s");
+            timeLeft--;
+            timeDisplay = TimeSpan.FromSeconds(timeLeft).ToString(@"ss\.f") + "s";
+            if ((timeLeft <= 0) && (matchesFound != 8))
+            {
+               
+                timer.Enabled = false;
+            }
             StateHasChanged();
         });
     }
 
 }
+
