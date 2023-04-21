@@ -18,6 +18,16 @@
     }
 </style>
 
+
+<div class="form-group">
+    <label for="theme">Velg tema:</label>
+    <select class="form-control" id="theme" @bind="selectedTheme" @bind:event="oninput" @onchange="@(() => OnSelectedThemeChange())">
+        <option value="dyr">Dyr</option>
+        <option value="mat">Mat</option>
+        <option value="sport">Sport</option>
+    </select>
+</div>
+
 <div class="container">
  <div class="row">
         @for (var animalNumber = 0; animalNumber < shuffledAnimals.Count; animalNumber++)
@@ -42,19 +52,38 @@
 </div>
 
 @code{
+
+    private string selectedTheme;
+
     List<string> animalEmoji = new List<string>()
-    {
-        "🐍", "🐍",
-        "🐤", "🐤",
-        "😺", "😺",
-        "🐘", "🐘",
-        "🦋", "🦋",
-        "🐅", "🐅",
-        "🐒", "🐒",
-        "🦈", "🦈",
+{
+    "🐍", "🐍",
+    "🐤", "🐤",
+    "😺", "😺",
+    "🐘", "🐘",
+    "🦋", "🦋",
+    "🐅", "🐅",
+    "🐒", "🐒",
+    "🦈", "🦈",
 
+    "🍔", "🍔",
+    "🍕", "🍕",
+    "🍟", "🍟",
+    "🍩", "🍩",
+    "🍦", "🍦",
+    "🥪", "🥪",
+    "🥤", "🥤",
+    "🍺", "🍺",
 
-    };
+    "⚽️", "⚽️",
+    "🏀", "🏀",
+    "🎾", "🎾",
+    "🏈", "🏈",
+    "🥊", "🥊",
+    "🏊", "🏊",
+    "🚴", "🚴",
+    "⛳️", "⛳️",
+};
 
     List<string> shuffledAnimals = new List<string>();
 
@@ -73,15 +102,47 @@
         SetUpGame();
     }
 
+    private void OnSelectedThemeChange()
+    {
+        SetUpGame();
+    }
+
     private void SetUpGame()
     {
         Random random = new Random();
-        shuffledAnimals = animalEmoji
-        .OrderBy(item => random.Next())
-        .ToList();
 
-        matchesFound = 0;
-        tenthsOfSecondsElapsed = 0;
+        switch (selectedTheme)
+        {
+
+            case "dyr":
+                shuffledAnimals = animalEmoji
+                    .Where(a => "🐍🐤😺🐘🦋🐅🐒🦈".Contains(a))
+                    .OrderBy(item => random.Next())
+                    .ToList();
+                break;
+
+            case "mat":
+                shuffledAnimals = animalEmoji
+                .Where(a => "🍔🍕🍟🍩🍦🥪🥤🍺".Contains(a))
+                    .OrderBy(item => random.Next())
+                    .ToList();
+                break;
+
+            case "sport":
+                shuffledAnimals = animalEmoji
+                .Where(a => "⚽️🏀🎾🏈🥊🏊🚴⛳️".Contains(a))
+                    .OrderBy(item => random.Next())
+                    .ToList();
+                break;
+
+        } 
+
+                matchesFound = 0;
+                tenthsOfSecondsElapsed = 0;
+                lastAnimalFound = string.Empty;
+                lastDescription = string.Empty;
+                timer.Stop();
+                timeDisplay = "00:00:00.0";
     }
 
 
