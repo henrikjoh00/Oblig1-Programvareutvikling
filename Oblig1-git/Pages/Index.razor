@@ -14,8 +14,15 @@
     button {
         width: 100px;
         height: 100px;
-        font-size: 50px;
-    }
+        font-size: 50px;}
+
+    .liten-knapp {
+        width: 25%;
+        height: 25px;
+        font-size: 0.75rem;
+   padding: 0.25rem 0.5rem;
+}
+
 </style>
 
 
@@ -44,6 +51,11 @@
             </div>
         }
     </div>
+
+    <div>
+        <input type="text" @bind-value="@navn" />
+        <button class="liten-knapp" @onclick="Lagre">Lagre navn</button>
+    </div>
     
     <div class="row">
         <button @onclick="@(() => SetUpGame())" type="button" class="btn btn-primary">Start Game</button>
@@ -56,7 +68,39 @@
     </div>
 </div>
 
+@if (spillFerdig)
+{
+    <h2>Resultater:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Tid brukt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for(int i = 0; i<@antallSpillere; i++)
+                {
+                <tr>
+                    <td>@spillere[i]</td>
+                    <td>@tider[i]</td>
+                </tr>
+                    
+                }
+        </tbody>
+    </table>
+}
+
+
 @code{
+    private bool spillFerdig = false;
+    private string navn;
+
+    int antallSpillere = 0;
+    int tidBrukt;
+
+    List<string> spillere = new List<string>();
+    List<int> tider = new List<int>();
 
     private string selectedTheme;
 
@@ -116,6 +160,7 @@
 
     private void SetUpGame()
     {
+
         Random random = new Random();
 
         switch (selectedTheme)
@@ -185,7 +230,19 @@
             if (matchesFound == 8)
             {
                 timer.Stop();
+                tidBrukt = 20 - timeLeft;
+
+                if (tidBrukt <= 0) tidBrukt = 0;
+
+                tider[antallSpillere] = tidBrukt;
                 timeDisplay += "   Game Complete";
+
+                spillFerdig = true;
+
+                //for(int i = 0; i<antallSpillere; i++)
+                //{
+                //    spillere[i]
+            //}
             }
 
         }
@@ -210,6 +267,13 @@
             }
             StateHasChanged();
         });
+    }
+
+    private void Lagre()
+    {
+        spillere[antallSpillere] = navn;
+
+        antallSpillere++;
     }
 
 }
